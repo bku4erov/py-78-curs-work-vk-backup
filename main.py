@@ -3,6 +3,7 @@ import os
 from pprint import pprint
 
 from vkapi import VkApi
+from yadiskapi import YaDiskApi
 
 CONFIG_FILENAME = 'config.txt'
 
@@ -14,7 +15,7 @@ if __name__ == '__main__':
             with open(CONFIG_FILENAME, 'rt') as config_file:
                 config = json.load(config_file)
                 vk_token = config['vk token']
-                # ya_disk_token = config['yandex disk token']
+                ya_disk_token = config['yandex disk token']
         except Exception as config_err:
             print('Error while reading config file:')
             print(type(config_err))
@@ -28,15 +29,20 @@ if __name__ == '__main__':
         print('Load VK token from config file failed.')
         vk_token = input('Please, input VK token value: ')
     
-    # # if ya_disk_token is None:
-    # #     print('Load Yandex.Disk token from config file failed.')
-    # #     ya_disk_token = input('Please, input Yandex.Disk token value: ')
+    if ya_disk_token is None:
+        print('Load Yandex.Disk token from config file failed.')
+        ya_disk_token = input('Please, input Yandex.Disk token value: ')
 
-    # print(f'VK token: {vk_token}')
-    # # print(f'Yandex.Disk token: {ya_disk_token}')
+    print(f'VK token: {vk_token}')
+    print(f'Yandex.Disk token: {ya_disk_token}')
 
     user_vk_api = VkApi(vk_token)
     # photos = user_vk_api.get_photos(1)
+
+    user_ya_disk_api = YaDiskApi(ya_disk_token)
+
+    # vk_user_id = input("Please, input VK user ID to upload profile's photos: ")
+    vk_user_id = 1
 
     # pprint(photos)
 
@@ -45,4 +51,4 @@ if __name__ == '__main__':
     # with open("photos.json", "w") as outfile:
     #     outfile.write(json_obj_photos)
 
-    user_vk_api.save_photos_to_yadisk(user_id=1)
+    user_vk_api.save_photos_to_yadisk(user_id=vk_user_id, ya_disk_api=user_ya_disk_api)

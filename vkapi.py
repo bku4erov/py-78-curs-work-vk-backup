@@ -4,6 +4,8 @@ from pprint import pprint
 
 import requests
 
+from yadiskapi import YaDiskApi
+
 
 class VkApi:
     
@@ -26,11 +28,22 @@ class VkApi:
         req = requests.get(photos_url, params={**self.params, **photos_params}).json()
         return req
     
-    def save_photos_to_yadisk(self, user_id, count=5):
+    def save_photos_to_yadisk(self, user_id, ya_disk_api: YaDiskApi, count=5):
         # get photos from VK by user_id
+        
+        if not isinstance(ya_disk_api, YaDiskApi):
+            print('Error! The parameter "ya_disk_api" must be an instance of "YaDiskApi"!')
+            return
+        
         photos = self.get_photos(user_id)
         # with open('photos.json', 'rt') as json_file:
         #     photos = json.load(json_file)
+
+        dir_name = f'photos_{user_id}'
+        dir_creating_status = ya_disk_api.create_dir(dir_name)
+        print(f'Creating directory to upload photos...\n{dir_creating_status}')
+        if dir_creating_status != 'OK':
+            return
 
         # get list of user profile's photos (count=5 first photos)
         photos_list = photos['response']['items'][:min(count, photos['response']['count'])]
@@ -50,6 +63,10 @@ class VkApi:
             
             # get type of photo's max size
             size = photo['sizes'][-1]['type']
+
+            print(f'Uploading file {file_name}...')
+            res = ya_disk_api.upload_photo_by_url(file_name, dir_name, photo['sizes'][-1]['url'])
+            print(res)
 
             # add information about photo to output json-file
             photos_info.append({'file_name': file_name, 'size': size})
