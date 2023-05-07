@@ -73,3 +73,6 @@ class VkApi:
             # print(file_name, size)
         
         pprint(photos_info)
+
+        with open('uploaded_photos_info.json', 'w') as json_file:
+            json.dump(photos_info, json_file, indent=2)
