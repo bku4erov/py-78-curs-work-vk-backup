@@ -42,6 +42,6 @@ class YaDiskApi:
             data=requests.get(file_url)
         )
         if res.status_code == 201:
-            return 'File was successfully uploadad'
+            return 'OK'
         else:
             return f'Something went wrong during uploading file {file_name}:\n {res}!'
