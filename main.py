@@ -37,18 +37,15 @@ if __name__ == '__main__':
     print(f'Yandex.Disk token: {ya_disk_token}')
 
     user_vk_api = VkApi(vk_token)
-    # photos = user_vk_api.get_photos(1)
 
     user_ya_disk_api = YaDiskApi(ya_disk_token)
 
-    # vk_user_id = input("Please, input VK user ID to upload profile's photos: ")
-    vk_user_id = 1
+    try:
+        vk_user_id = int(input("Please, input VK user ID to upload profile's photos: "))
+    except:
+        print('VK user ID should be valid integer value!')
+        exit()
 
-    # pprint(photos)
+    vk_album_id = str(input('Please, input album ID (profile by default): ') or 'profile')
 
-    # json_obj_photos = json.dumps(photos, indent=4)
-
-    # with open("photos.json", "w") as outfile:
-    #     outfile.write(json_obj_photos)
-
-    user_vk_api.save_photos_to_yadisk(user_id=vk_user_id, ya_disk_api=user_ya_disk_api)
+    user_vk_api.save_photos_to_yadisk(user_id=vk_user_id, ya_disk_api=user_ya_disk_api, album=vk_album_id)

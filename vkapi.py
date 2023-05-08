@@ -18,30 +18,32 @@ class VkApi:
             'v': version
         }
     
-    def get_photos(self, user_id):
+    def get_photos(self, user_id, album='profile'):
         photos_url = self.url + 'photos.get'
         photos_params = {
             'owner_id': user_id,
-            'album_id': 'profile',
+            'album_id': album,
             'extended': 1,
             'photo_sizes': 1
         }
         req = requests.get(photos_url, params={**self.params, **photos_params}).json()
         return req
     
-    def save_photos_to_yadisk(self, user_id, ya_disk_api: YaDiskApi, count=5):
+    def save_photos_to_yadisk(self, user_id, ya_disk_api: YaDiskApi, album='profile', count=5):
         
         if not isinstance(ya_disk_api, YaDiskApi):
             print('Error! The parameter "ya_disk_api" must be an instance of "YaDiskApi"!')
             return
         
         # get photos from VK by user_id
-        photos = self.get_photos(user_id)
+        photos = self.get_photos(user_id, album)
         # with open('photos.json', 'rt') as json_file:
         #     photos = json.load(json_file)
 
         # create direcroty named by user_id at Yandex.Disk
         dir_name = f'photos_{user_id}'
+        if album != 'profile':
+            dir_name += f'_{album}'
         dir_creating_status = ya_disk_api.create_dir(dir_name)        
         if dir_creating_status != 'OK':
             print(f'Failed to create directory for uploading photos!\n{dir_creating_status}')
@@ -56,13 +58,14 @@ class VkApi:
         
         photos_info = []
         photos_info_err = []
-        for photo in tqdm(photos_list):
+        for photo in (pbar := tqdm(photos_list, desc='Uploading photos from VK to Yandex.Disk')):
             # generate file name using likes count and photo upload date
             likes_count = photo["likes"]["count"]
             if likes_count in dup_likes_cnt:
-                file_name = f'{likes_count} {datetime.fromtimestamp(photo["date"])}.jpg'
+                file_name = f'{likes_count}_{datetime.fromtimestamp(photo["date"]):%Y%m%d_%H%M%S}.jpg'
             else:
                 file_name = f'{likes_count}.jpg'
+            pbar.set_postfix_str(file_name)
             
             # get type of photo's max size
             size = photo['sizes'][-1]['type']
