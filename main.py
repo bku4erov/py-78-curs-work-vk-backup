@@ -23,7 +23,7 @@ if __name__ == '__main__':
                     # Yandex.Disk token will be asked to input by user
                     pass
         except Exception as config_err:
-            print(f'Error while reading config file:\n{type(config_err)}\n{config_err}\n')
+            print(f'Error while reading config file:\n{type(config_err)}\n{config_err}')
     else:
         print('Config file not found. See "config_example.txt"')
     
@@ -52,10 +52,9 @@ if __name__ == '__main__':
     # print(f'Yandex.Disk token: {ya_disk_token}')
 
     user_vk_api = VkApi(vk_token)
-
     user_ya_disk_api = YaDiskApi(ya_disk_token)
 
-
     vk_album_id = str(input('Please, input album ID (profile by default): ') or 'profile')
+    photos_cnt = int(input('Please, input photos number to be uploaded (5 by default): ') or 5)
 
-    user_vk_api.save_photos_to_yadisk(user_id=vk_user_id, ya_disk_api=user_ya_disk_api, album=vk_album_id)
+    user_vk_api.save_photos_to_yadisk(user_id=vk_user_id, ya_disk_api=user_ya_disk_api, album=vk_album_id, count=photos_cnt)

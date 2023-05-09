@@ -36,7 +36,11 @@ class VkApi:
             return
         
         # get photos from VK by user_id
-        photos = self.get_photos(user_id, album)
+        try:
+            photos = self.get_photos(user_id, album)
+        except:
+            print('Failed to load list of photos from VK!')
+            return
         # with open('photos.json', 'rt') as json_file:
         #     photos = json.load(json_file)
 
@@ -50,7 +54,14 @@ class VkApi:
             return
 
         # get list of user profile's photos (count=5 first photos)
-        photos_list = photos['response']['items'][:min(count, photos['response']['count'])]
+        try:
+            photos_list = photos['response']['items'][:min(count, photos['response']['count'])]
+        except:
+            try:
+                print(f'Failed to process list of photos from VK: {photos["error"]["error_msg"]}!')
+            except:
+                print('Failed to process list of photos from VK!')
+            return
         
         # find number of likes which several (more than one) photos have
         likes_cnt_list = [photo["likes"]["count"] for photo in photos_list]
